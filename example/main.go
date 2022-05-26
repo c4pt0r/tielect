@@ -9,25 +9,37 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-type MyCandidate struct{}
+type MyCandidate struct {
+	id string
+}
 
+// Make sure the ID is unique
 func (c *MyCandidate) ID() string {
-	u, _ := uuid.NewV4()
-	return u.String()
+	return c.id
 }
 
 func (c *MyCandidate) Val() string {
 	return "any value"
 }
 
+func UUID() string {
+	u, _ := uuid.NewV4()
+	return u.String()
+}
+
 func main() {
+	// Use TiDB connection here
 	db, err := sql.Open("mysql", "root:@tcp(localhost:4000)/test")
 	if err != nil {
 		log.Fatal(err)
 	}
-	e := tielect.NewElection(db, "default", &MyCandidate{})
+
+	e := tielect.NewElection(db, "default", &MyCandidate{
+		id: UUID(),
+	})
 	e.Init()
 
+	// Start election, it will block until election is finished
 	if ok, err := e.Campaign(); err != nil {
 		panic(err)
 	} else if !ok {
