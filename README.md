@@ -3,7 +3,7 @@ A leader-election library at scale using TiDB as backend
 
 # Usage
 
-```
+```Go
 type MyCandidate struct {
 	id string
 }
